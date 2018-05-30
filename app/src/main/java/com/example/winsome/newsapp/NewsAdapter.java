@@ -2,6 +2,8 @@ package com.example.winsome.newsapp;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -18,6 +20,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class NewsAdapter extends ArrayAdapter<News> {
     private static final String LOG_TAG = NewsAdapter.class.getSimpleName();
@@ -63,7 +66,14 @@ public class NewsAdapter extends ArrayAdapter<News> {
             public void onClick(View v) {
                 Intent myWebLink = new Intent(android.content.Intent.ACTION_VIEW);
                 myWebLink.setData(Uri.parse(currentNews.getUrl()));
-                getContext().startActivity(myWebLink);
+                // Verify it resolves
+                PackageManager packageManager = getContext().getPackageManager();
+                List<ResolveInfo> activities = packageManager.queryIntentActivities(myWebLink, 0);
+                boolean isIntentSafe = activities.size() > 0;
+                // Start an activity if it's safe
+                if (isIntentSafe) {
+                    getContext().startActivity(myWebLink);
+                }
             }
         });
 

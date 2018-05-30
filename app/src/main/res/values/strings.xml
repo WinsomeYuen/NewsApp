@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">TechNews</string>
     <string name="action_more">Read More</string>
-    <string name="no_news">No news found.</string>
+    <string name="no_news">Currently there are no stories for you. You can always come later and check for all new stories.</string>
     <string name="author">Author | </string>
     <string name="section">Section | </string>
     <string name="no_internet_connection">No internet connection.</string>
