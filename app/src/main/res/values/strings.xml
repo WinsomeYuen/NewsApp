@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">TechNews</string>
+    <string name="action_more">Read More</string>
+    <string name="no_news">No news found.</string>
+    <string name="author">Author | </string>
+    <string name="section">Section | </string>
+</resources>
