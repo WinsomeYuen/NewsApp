@@ -155,7 +155,7 @@ public final class QueryUtils {
                 String title = result.getString("webTitle");
 
                 // Extract the value for the key called "section"
-                String section = result.getString("sectionName");
+                String type = result.getString("type");
 
                 // Extract the value for the key called "author"
                 JSONArray tagsArray = result.getJSONArray("tags");
@@ -181,7 +181,7 @@ public final class QueryUtils {
                 // Extract the value for the key called "url"
                 String url = result.getString("webUrl");
 
-                news.add(new News(thumbnailBitmap, title, section, author, time, url));
+                news.add(new News(thumbnailBitmap, title, type, author, time, url));
             }
 
         } catch (JSONException e) {

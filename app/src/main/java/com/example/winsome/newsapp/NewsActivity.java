@@ -5,11 +5,15 @@ import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -20,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressLint("NewApi")
-public class NewsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<News>> {
+public class NewsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<News>>, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final int NEWS_LOADER_ID = 1;
 
@@ -30,8 +34,12 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private TextView mEmptyStateTextView;
 
-    /** URL for news data from guardian API */
-    private static final String USGS_REQUEST_URL = "https://content.guardianapis.com/search?q=technology&show-tags=contributor&show-fields=thumbnail&api-key=f29a4891-6dde-43ca-bbf5-c5db37e235c6";
+    private LoaderManager loaderManager;
+
+    /**
+     * URL for news data from guardian API
+     */
+    private static final String USGS_REQUEST_URL = "https://content.guardianapis.com/search?q=";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +72,13 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
         // If there is a network connection, fetch data
         if (networkInfo != null && networkInfo.isConnected()) {
             // Get a reference to the LoaderManager, in order to interact with loaders.
-            LoaderManager loaderManager = getLoaderManager();
+            loaderManager = getLoaderManager();
+
+            //Load the preferences and create an instance of sharedPreferences
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+            //register the sharedPreferenceListener; The activity implements OnSharedPreferenceChangeListener
+            sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
             // Initialize the loader. Pass in the int ID constant defined above and pass in null for
             // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
@@ -82,8 +96,35 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     @Override
+    // onCreateLoader instantiates and returns a new Loader for the given ID
     public Loader<List<News>> onCreateLoader(int i, Bundle bundle) {
-        return new NewsLoader(this, USGS_REQUEST_URL);
+
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        // getString retrieves a String value from the preferences. The second parameter is the default value for this preference.
+        String tag = sharedPrefs.getString(
+                getString(R.string.settings_tag_key), getString(R.string.settings_tag_default));
+
+        String orderBy = sharedPrefs.getString(
+                getString(R.string.settings_order_by_key), getString(R.string.settings_order_by_default));
+
+        // parse breaks apart the URI string that's passed into its parameter
+        Uri baseUri = Uri.parse(USGS_REQUEST_URL);
+
+        // buildUpon prepares the baseUri that we just parsed so we can add query parameters to it
+        Uri.Builder uriBuilder = baseUri.buildUpon();
+
+        // Append query parameter and its value.
+        uriBuilder.appendQueryParameter("", tag);
+        uriBuilder.appendQueryParameter("order-by", orderBy);
+        uriBuilder.appendQueryParameter("section", "technology");
+        uriBuilder.appendQueryParameter("show-tags", "contributor");
+        uriBuilder.appendQueryParameter("show-fields", "thumbnail");
+        uriBuilder.appendQueryParameter("api-key", "f29a4891-6dde-43ca-bbf5-c5db37e235c6");
+
+        // Return the completed uri `https://content.guardianapis.com/search?q=technology&show-tags=contributor&show-fields=thumbnail&api-key=f29a4891-6dde-43ca-bbf5-c5db37e235c6'
+        return new NewsLoader(this, uriBuilder.toString().replace("&=", ""));
+
     }
 
     @Override
@@ -107,5 +148,45 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
     public void onLoaderReset(Loader<List<News>> loader) {
         // Loader reset, so we can clear out our existing data.
         mAdapter.clear();
+    }
+
+    @Override
+    // This method initialize the contents of the Activity's options menu
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    // This method is called whenever an item in the options menu is selected.
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            Intent settingsIntent = new Intent(this, SettingsActivity.class);
+            startActivity(settingsIntent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    //Callback method when OnSharedPreferenceChangeListener is triggered
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+
+        if (key.contains((getString(R.string.settings_tag_key)))) {
+            //The onCreateLoader method will read the preferences
+            loaderManager.restartLoader(NEWS_LOADER_ID, null, NewsActivity.this);
+        } else if (key.contains(getString(R.string.settings_order_by_key))) {
+            //The onCreateLoader method will read the preferences
+            loaderManager.restartLoader(NEWS_LOADER_ID, null, NewsActivity.this);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
+
+
     }
 }

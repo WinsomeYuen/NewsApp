@@ -42,6 +42,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textColor="@color/textColorNewsInfo"
                         android:text="@string/author"/>
 
                     <Space
@@ -64,7 +65,8 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/section"/>
+                        android:textColor="@color/textColorNewsInfo"
+                        android:text="@string/type"/>
 
                     <Space
                         android:layout_width="2dp"
@@ -73,33 +75,36 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/section_text_view"
+                        android:id="@+id/type_text_view"
                         android:textColor="@color/textColorNewsDetails"/>
 
                 </LinearLayout>
 
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <Button
-                    android:id="@+id/more_button"
-                    android:layout_width="wrap_content"
+                <RelativeLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/action_more"
-                    android:theme="@style/PrimaryFlatButton"
-                    android:onClick="myClickHandler"/>
+                    android:paddingTop="10dp">
 
-                <TextView
-                    android:id="@+id/date_text_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:textColor="@color/textColorNewsDate"
-                    android:textSize="12sp"
-                    tools:text="Mar 6, 2010" />
+                    <TextView
+                        android:id="@+id/date_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:paddingTop="10dp"
+                        android:textColor="@color/textColorNewsDate"
+                        android:textSize="12sp"
+                        tools:text="Mar 6, 2010" />
+
+                    <Button
+                        android:id="@+id/more_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:onClick="myClickHandler"
+                        android:layout_alignParentRight="true"
+                        android:text="@string/action_more"
+                        android:theme="@style/PrimaryFlatButton" />
+
+                </RelativeLayout>
 
             </LinearLayout>
 

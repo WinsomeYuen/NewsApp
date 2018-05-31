@@ -45,9 +45,9 @@ public class NewsAdapter extends ArrayAdapter<News> {
         ImageView articleThumbnail = (ImageView) listItemView.findViewById(R.id.thumbnail_image_view);
         articleThumbnail.setImageBitmap(formatImageFromBitmap(currentNews.getImage()));
 
-        // Set section
-        TextView section = (TextView) listItemView.findViewById(R.id.section_text_view);
-        section.setText(currentNews.getSection());
+        // Set type
+        TextView type = (TextView) listItemView.findViewById(R.id.type_text_view);
+        type.setText(currentNews.getType());
 
         // Set title
         TextView title = (TextView) listItemView.findViewById(R.id.title_text_view);
@@ -60,7 +60,6 @@ public class NewsAdapter extends ArrayAdapter<News> {
         // Set publish time
         TextView publishTime = (TextView) listItemView.findViewById(R.id.date_text_view);
         publishTime.setText(formatPublishTime(currentNews.getDate()));
-
         Button btn = (Button) listItemView.findViewById(R.id.more_button);
         btn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
